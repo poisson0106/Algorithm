@@ -48,24 +48,35 @@ class BinaryTree(object):
 		else:
 			return True
     
-	def contains(self,element):
-		pass
-    
-	def removeLeftSubtree(self):
-		pass
+	def removeLeftSubtree(self,arrow = None):
+		if arrow is None:
+			arrow = self.__root
+			del self.__preString[:]
+
+		if arrow.getVal() != self.__root.getVal():
+			removeLeftSubtree(arrow.getLeft())
+			removeLeftSubtree(arrow.getRight())
+			del arrow
 	
 	def removeRightSubtree(self):
 		pass
 	
 	def find(self,targetelement):
-		pass
+		if len(self.__preString) == 0:
+			preInorder(self.__root)
+		else:
+			for x in self.__preString:
+				if x == targetelement:
+					return x
+				else:
+					return None
 	
 	def toString(self):
 		pass
 	
 	def preInorder(self,arrow):
 		if not arrow is None:
-			self.__preString = self.__preString + arrow.getVal()
+			self.__preString.append(arrow.getVal())
 			self.preInorder(arrow.getLeft())
 			self.preInorder(arrow.getRight())
 			return self.__preString
@@ -74,13 +85,13 @@ class BinaryTree(object):
 		if not arrow is None:
 			self.postInorder(arrow.getLeft())
 			self.postInorder(arrow.getRight())
-			self.__postString = self.__postString + arrow.getVal()
+			self.__postString.append(arrow.getVal())
 			return self.__postString
 
 	def inOrder(self,arrow):
 		if not arrow is None:
 			self.inOrder(arrow.getLeft())
-			self.__inString = self.__inString + arrow.getVal()
+			self.__inString.append(arrow.getVal())
 			self.inOrder(arrow.getRight())
 			return self.__inString
 
@@ -108,11 +119,14 @@ class BinaryTree(object):
 
 	__count = 0
 	__root = None
-	__preString = ''
-	__postString = ''
-	__inString = ''
+	__preString = []
+	__postString = []
+	__inString = []
 
 tree = BinaryTree()
 tree.setRoot(tree.create())
 print(tree.preInorder(tree.getRoot()))
+tree.removeLeftSubtree()
+print(tree.preInorder(tree.getRoot()))
+
 		
