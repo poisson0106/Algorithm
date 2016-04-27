@@ -32,6 +32,7 @@ class ObjectItem(object):
 	__value = None
 	__left = None
 	__right = None
+	__type = None
 
 
 class BinaryTree(object):
@@ -49,14 +50,13 @@ class BinaryTree(object):
 			return True
     
 	def removeLeftSubtree(self,arrow = None):
-		if arrow is None:
-			arrow = self.__root
+		if not arrow is None:
 			del self.__preString[:]
-
-		if arrow.getVal() != self.__root.getVal():
-			removeLeftSubtree(arrow.getLeft())
-			removeLeftSubtree(arrow.getRight())
-			del arrow
+	
+			self.removeLeftSubtree(arrow.getLeft())
+			self.removeLeftSubtree(arrow.getRight())
+			print(arrow.getVal())
+			arrow.setVal('Empty')
 	
 	def removeRightSubtree(self):
 		pass
@@ -126,7 +126,7 @@ class BinaryTree(object):
 tree = BinaryTree()
 tree.setRoot(tree.create())
 print(tree.preInorder(tree.getRoot()))
-tree.removeLeftSubtree()
+tree.removeLeftSubtree(tree.getRoot().getLeft())
 print(tree.preInorder(tree.getRoot()))
 
 		
