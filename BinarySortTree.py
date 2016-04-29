@@ -82,18 +82,49 @@ class BinarySortTree(object):
                     left_tree.left.parent = left_tree.parent
                     left_tree = None
 
-
     def find_min(self):
-        pass
+        if self.root is not None:
+            if self.root.left is not None:
+                tmp_arrow = self.root
+                while tmp_arrow.left is not None:
+                    tmp_arrow = tmp_arrow.left
+                return tmp_arrow
+            else:
+                return self.root
+        else:
+            raise Exception
 
     def find_max(self):
-        pass
+        if self.root is not None:
+            if self.root.right is not None:
+                tmp_arrow = self.root
+                while tmp_arrow.right is not None:
+                    tmp_arrow = tmp_arrow.right
+                return tmp_arrow
+            else:
+                return self.root
+        else:
+            raise Exception
 
     def remove_min(self):
-        pass
+        min_element = self.find_min()
+        if min_element is self.root:
+            self.root = min_element.right
+            min_element.right.parent = None
+        else:
+            min_element.parent.left = None
+            min_element.parent = None
+            min_element = None
 
     def remove_max(self):
-        pass
+        max_element = self.find_max()
+        if max_element is self.root:
+            self.root = max_element.right
+            max_element.right.parent = None
+        else:
+            max_element.parent.right = None
+            max_element.parent = None
+            max_element = None
 
     def pre_in_order(self, arrow):
         if arrow is self.root:
@@ -125,4 +156,9 @@ class BinarySortTree(object):
 sort = BinarySortTree([8, 10, 20, 6, 4, 7, 15, 21, 3, 2])
 print (sort.pre_in_order(sort.root))
 sort.remove_element(6)
+print (sort.pre_in_order(sort.root))
+print (sort.find_max().val)
+print (sort.find_min().val)
+sort.remove_max()
+sort.remove_min()
 print (sort.pre_in_order(sort.root))

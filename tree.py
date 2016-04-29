@@ -72,15 +72,18 @@ class BinaryTree(object):
                 arrow.setRight(None)
                 arrow = None
 
-    def find(self, targetelement):
-        if len(self.__preString) == 0:
-            self.preInorder(self.__root)
-        else:
-            for x in self.__preString:
-                if x == targetelement:
-                    return x
-                else:
-                    return None
+    def find(self, arrow, val):
+        if arrow is not None:
+            if arrow.getVal() == val:
+                return arrow
+            else:
+                l = self.find(arrow.getLeft(), val)
+                if l is not None:
+                    return l
+                r = self.find(arrow.getRight(), val)
+                if r is not None:
+                    return r
+                return None
 
     def toString(self):
         pass
