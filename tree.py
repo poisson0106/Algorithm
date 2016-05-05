@@ -109,6 +109,30 @@ class BinaryTree(object):
             self.inOrder(arrow.getRight())
             return self.__inString
 
+    def levelOrder(self):
+        queue = []
+        if self.getRoot() is not None:
+            queue.append(self.getRoot())
+            parent_count = 1
+            child_count = 0
+            while len(queue) != 0:
+                head = queue[0]
+                if head.getLeft() is not None:
+                    queue.append(head.getLeft())
+                    child_count += 1
+                if head.getRight() is not None:
+                    queue.append(head.getRight())
+                    child_count += 1
+                print head.getVal(),
+                queue.pop(0)
+                parent_count -= 1
+
+                if parent_count == 0:
+                    parent_count = child_count
+                    child_count = 0
+                    print ("----------------------------")
+
+
     def create(self):
         print("Please input the value")
         val = raw_input()
@@ -140,8 +164,9 @@ class BinaryTree(object):
 
 tree = BinaryTree()
 tree.setRoot(tree.create())
-print(tree.preInorder(tree.getRoot()))
-tree.removeLeftSubtree(tree.getRoot())
-print(tree.preInorder(tree.getRoot()))
-tree.removeRightSubtree(tree.getRoot())
-print (tree.preInorder(tree.getRoot()))
+tree.levelOrder()
+# print(tree.preInorder(tree.getRoot()))
+# tree.removeLeftSubtree(tree.getRoot())
+# print(tree.preInorder(tree.getRoot()))
+# tree.removeRightSubtree(tree.getRoot())
+# print (tree.preInorder(tree.getRoot()))
