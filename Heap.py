@@ -1,3 +1,6 @@
+import math
+
+
 class HeapNode(object):
     def __init__(self, arg=None):
         super(HeapNode, self).__init__()
@@ -16,7 +19,8 @@ class Heap(object):
         super(Heap, self).__init__()
         if arg is not None:
             for x in arg:
-                self.add_element(x)
+                # self.add_element(x)
+                self.add_element_ary(x)
 
     def add_element(self, val=None):
         if self.root is None:
@@ -65,6 +69,9 @@ class Heap(object):
                         node.is_left = True
                         self.last_node = node
 
+    def add_element_ary(self, val=None):
+        self.heap_ary.append(val)
+
     def pre_in_order(self, arrow):
         if arrow is self.root:
             del self.pre_string[:]
@@ -75,20 +82,51 @@ class Heap(object):
             return self.pre_string
 
     def find_min(self):
-        pass
+        self.reorder()
+        return self.heap_ary[0]
 
     def remove_min(self):
         pass
 
-    def reorder(self, arrow):
-        if arrow.left.left is not None:
-            self.reorder(arrow.left)
-
+    def reorder(self):
+        length = len(self.heap_ary)
+        if length > 0:
+            layer = int(math.log(length, 2))
+            cont = int(math.pow(2, layer) - 2)  # Since the ary is begun with 0
+            while cont >= 0:
+                element = self.heap_ary[cont]
+                if cont * 2 + 1 > length - 1:  # Since the begin is 0, so the length should minus 1
+                    cont -= 1
+                else:
+                    if cont * 2 + 2 <= length - 1:
+                        if self.heap_ary[cont * 2 + 1] <= self.heap_ary[cont * 2 + 2]:
+                            if element >= self.heap_ary[cont * 2 + 1]:
+                                self.heap_ary[cont] = self.heap_ary[cont * 2 + 1]
+                                self.heap_ary[cont * 2 + 1] = element
+                                cont -= 1
+                            else:
+                                cont -= 1
+                        else:
+                            if element >= self.heap_ary[cont * 2 + 2]:
+                                self.heap_ary[cont] = self.heap_ary[cont * 2 + 2]
+                                self.heap_ary[cont * 2 + 2] = element
+                                cont -= 1
+                            else:
+                                cont -= 1
+                    else:
+                        if element >= self.heap_ary[cont * 2 + 1]:
+                            self.heap_ary[cont] = self.heap_ary[cont * 2 + 1]
+                            self.heap_ary[cont * 2 + 1] = element
+                            cont -= 1
+                        else:
+                            cont -= 1
 
     root = None
     last_node = None
     pre_string = []
+    heap_ary = []
 
 
 tree = Heap([28, 10, 30, 5, 9, 15, 12, 22, 18, 13, 27, 1])
-print (tree.pre_in_order(tree.root))
+tree.reorder()
+print (tree.heap_ary)
