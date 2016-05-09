@@ -71,6 +71,7 @@ class Heap(object):
 
     def add_element_ary(self, val=None):
         self.heap_ary.append(val)
+        self.reorder()
 
     def pre_in_order(self, arrow):
         if arrow is self.root:
@@ -86,40 +87,51 @@ class Heap(object):
         return self.heap_ary[0]
 
     def remove_min(self):
-        pass
+        self.heap_ary[0] = self.heap_ary[len(self.heap_ary)-1]
+        self.heap_ary.pop()
+        
 
     def reorder(self):
         length = len(self.heap_ary)
         if length > 0:
-            layer = int(math.log(length, 2))
-            cont = int(math.pow(2, layer) - 2)  # Since the ary is begun with 0
+            layer = int(math.log(length, 2))  # calculate the layer from 0 layer
+            cont = int(math.pow(2, layer + 1) - 2)
             while cont >= 0:
-                element = self.heap_ary[cont]
-                if cont * 2 + 1 > length - 1:  # Since the begin is 0, so the length should minus 1
+                if cont * 2 + 1 > length - 1:
                     cont -= 1
                 else:
-                    if cont * 2 + 2 <= length - 1:
-                        if self.heap_ary[cont * 2 + 1] <= self.heap_ary[cont * 2 + 2]:
-                            if element >= self.heap_ary[cont * 2 + 1]:
-                                self.heap_ary[cont] = self.heap_ary[cont * 2 + 1]
-                                self.heap_ary[cont * 2 + 1] = element
-                                cont -= 1
-                            else:
-                                cont -= 1
-                        else:
-                            if element >= self.heap_ary[cont * 2 + 2]:
-                                self.heap_ary[cont] = self.heap_ary[cont * 2 + 2]
-                                self.heap_ary[cont * 2 + 2] = element
-                                cont -= 1
-                            else:
-                                cont -= 1
+                    self.heap_reorder(cont, length)
+                    cont -= 1
+
+    def heap_reorder(self, rp, length):
+        lchild = 2 * rp + 1
+        rchild = 2 * rp + 2
+        if lchild <= length - 1:
+            if rchild <= length - 1:
+                if self.heap_ary[lchild] <= self.heap_ary[rchild]:
+                    if self.heap_ary[lchild] < self.heap_ary[rp]:
+                        tmp = self.heap_ary[lchild]
+                        self.heap_ary[lchild] = self.heap_ary[rp]
+                        self.heap_ary[rp] = tmp
+                        self.heap_reorder(lchild, length)
                     else:
-                        if element >= self.heap_ary[cont * 2 + 1]:
-                            self.heap_ary[cont] = self.heap_ary[cont * 2 + 1]
-                            self.heap_ary[cont * 2 + 1] = element
-                            cont -= 1
-                        else:
-                            cont -= 1
+                        return None
+                else:
+                    if self.heap_ary[rchild] < self.heap_ary[rp]:
+                        tmp = self.heap_ary[rchild]
+                        self.heap_ary[rchild] = self.heap_ary[rp]
+                        self.heap_ary[rp] = tmp
+                        self.heap_reorder(rchild, length)
+                    else:
+                        return None
+            else:
+                if self.heap_ary[lchild] < self.heap_ary[rp]:
+                    tmp = self.heap_ary[lchild]
+                    self.heap_ary[lchild] = self.heap_ary[rp]
+                    self.heap_ary[rp] = tmp
+                    self.heap_reorder(lchild, length)
+        else:
+            return None
 
     root = None
     last_node = None
