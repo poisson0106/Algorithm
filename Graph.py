@@ -20,6 +20,14 @@ class Edge:
     next_edge = None
 
 
+class Traversal:
+    def __init__(self, arg):
+        self.node = arg
+
+    node = None
+    isVisited = -1
+
+
 class Graph:
     def __init__(self, ary):
         self.len = len(ary)
@@ -99,10 +107,16 @@ class Graph:
                 pos = x.position
         return pos
 
+    def bf_traverse(self,node):
+        if node is not None:
+
+
     ary = []
     len = 0
+    queue = []
 
 
 ary = ['a', 'e', 'q', 'y', 'x']
 graph = Graph(ary)
 print (graph.has_edge('q', 'a'))
+# graph.remove_edge('q', 'a')
