@@ -46,7 +46,6 @@ class Graph:
         self.ary.append(Node(val, self.len))
         self.len += 1
 
-    # This part needs to be tested
     def remove_edge(self, ele1, ele2):
         s_pos = -1
         e_pos = -1
@@ -70,9 +69,16 @@ class Graph:
                     break
             else:
                 arrow = arrow.next_edge
-
-    def remove_node(self):
-        pass
+                
+    # Need to fix, since with the node removed, the position shoud be changed
+    def remove_node(self, ele):
+        pos = self.find_pos(ele)
+        node = self.ary[pos]
+        tmp = node.head
+        while tmp is not None:
+            self.remove_edge(node.val, self.ary[tmp.end].val)
+            tmp = tmp.next_edge
+        self.ary.pop(node.position)
 
     def has_edge(self, start, end):
         s_pos = self.find_pos(start)
@@ -99,7 +105,7 @@ class Graph:
                 pos = x.position
         return pos
 
-    def traverse_node(self, node):
+    def traverse_node_bf(self, node):
         if node.position in self.is_visited:
             return 0
         else:
@@ -113,17 +119,39 @@ class Graph:
                 self.is_visited.append(node.position)
                 print (node.val)
                 if len(self.queue) != 0:
-                    self.traverse_node(self.queue[0])
+                    self.traverse_node_bf(self.queue[0])
                 else:
                     return 0
             else:
                 self.is_visited.append(node.position)
 
+    def traverse_node_df(self, node):
+        if node.position not in self.is_visited:
+            print(node.val)
+            self.is_visited.append(node.position)
+            tmp = node.head
+            while tmp is not None:
+                self.traverse_node_df(self.ary[tmp.end])
+                tmp = tmp.next_edge
+        else:
+            return 0
+
     def bf_traverse(self):
         self.is_visited = []
         if len(self.ary) != 0:
-            self.queue.append(self.ary[0])
-            self.traverse_node(self.ary[0])
+            for x in range(0, len(self.ary)):
+                if x not in self.is_visited:
+                    self.traverse_node_bf(self.ary[x])
+        else:
+            print ("Error")
+
+    def df_traverse(self):
+        self.is_visited = []
+        if len(self.ary) != 0:
+            for x in range(0, len(self.ary)):
+                if x not in self.is_visited:
+                    self.queue.append(self.ary[x])
+                    self.traverse_node_df(self.ary[x])
         else:
             print ("Error")
 
@@ -135,6 +163,10 @@ class Graph:
 
 ary = ['a', 'e', 'q', 'y', 'x']
 graph = Graph(ary)
-print (graph.has_edge('q', 'a'))
-# graph.remove_edge('q', 'a')
+graph.remove_edge('q', 'a')
+graph.remove_node('q')
 graph.bf_traverse()
+# ary2 = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8']
+# graph2 = Graph(ary2)
+# graph2.remove_edge('v2', 'v5')
+# graph2.df_traverse()
