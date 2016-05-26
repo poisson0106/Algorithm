@@ -23,7 +23,6 @@ class Edge:
 class Graph:
     def __init__(self, ary):
         self.len = len(ary)
-        tail = None
         for x in range(0, len(ary)):
             self.ary.append(Node(ary[x], x))
         for x in range(0, self.len):
@@ -47,38 +46,60 @@ class Graph:
         self.len += 1
 
     def remove_edge(self, ele1, ele2):
-        s_pos = -1
-        e_pos = -1
         if self.has_edge(ele1, ele2):
             s_pos = self.find_pos(ele1)
             e_pos = self.find_pos(ele2)
             self.remove_from_table(s_pos, e_pos)
             self.remove_from_table(e_pos, s_pos)
+            if self.ary[s_pos].head is None:
+                return 0
+            else:
+                if self.ary[s_pos].head.val == ele2:
+                    return 1
+                else:
+                    return 0
 
     def remove_from_table(self, s_pos, e_pos):
         arrow = self.ary[s_pos].head
-        while arrow is not None:
-            if arrow.end == e_pos:
-                if arrow.next_edge is None:
-                    arrow = None
-                    break
-                else:
-                    arrow.end = arrow.next_edge.end
-                    arrow.val = arrow.next_edge.val
-                    arrow.next_edge = arrow.next_edge.next_edge
-                    break
+        if arrow.end == e_pos:
+            if arrow.next_edge is not None:
+                self.ary[s_pos].head = arrow.next_edge
             else:
-                arrow = arrow.next_edge
-                
+                self.ary[s_pos].head = None
+        else:
+            arrow_next = arrow.next_edge
+            while arrow_next is not None:
+                if arrow_next.end == e_pos:
+                    if arrow_next.next_edge is None:
+                        arrow.next_edge = None
+                        break
+                    else:
+                        arrow.next_edge = arrow_next.next_edge
+                        break
+                else:
+                    arrow = arrow_next
+                    arrow_next = arrow_next.next_edge
+
     # Need to fix, since with the node removed, the position shoud be changed
     def remove_node(self, ele):
         pos = self.find_pos(ele)
         node = self.ary[pos]
         tmp = node.head
         while tmp is not None:
-            self.remove_edge(node.val, self.ary[tmp.end].val)
-            tmp = tmp.next_edge
-        self.ary.pop(node.position)
+            if self.remove_edge(node.val, self.ary[tmp.end].val) !=1:
+                tmp = tmp.next_edge
+        for x in range(0, len(self.ary)):
+            tmp = self.ary[x].head
+            while tmp is not None:
+                if tmp.end > pos:
+                    tmp.end -= 1
+                tmp = tmp.next_edge
+            if x > pos:
+                self.ary[x].position -= 1
+                self.ary[x - 1] = self.ary[x]
+
+        self.ary.pop()
+        self.len -= 1
 
     def has_edge(self, start, end):
         s_pos = self.find_pos(start)
@@ -123,6 +144,7 @@ class Graph:
                 else:
                     return 0
             else:
+                print (node.val)
                 self.is_visited.append(node.position)
 
     def traverse_node_df(self, node):
@@ -141,6 +163,7 @@ class Graph:
         if len(self.ary) != 0:
             for x in range(0, len(self.ary)):
                 if x not in self.is_visited:
+                    self.queue.append(self.ary[x])
                     self.traverse_node_bf(self.ary[x])
         else:
             print ("Error")
@@ -163,7 +186,7 @@ class Graph:
 
 ary = ['a', 'e', 'q', 'y', 'x']
 graph = Graph(ary)
-graph.remove_edge('q', 'a')
+# graph.remove_edge('q', 'a')
 graph.remove_node('q')
 graph.bf_traverse()
 # ary2 = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8']
