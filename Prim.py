@@ -22,26 +22,25 @@ class Node:
 
 class Edge:
     def __init__(self, *args):
-
+        self._edge_marix = [[0 for cols in range(0, args[0])] for rows in range(0, args[0])]
 
     @property
     def edge_marix(self):
         return self._edge_marix
 
-    @edge_marix.setter
-    def edge_marix(self, times):
-        self._edge_marix = [[0 for cols in range(0, times)] for rows in range(0, times)]
-
     def add_edge(self, start, end, val):
-        print self._edge_marix[0][3]
-        # self._edge_marix[start][end] = val
-        # self._edge_marix[end][start] = val
+        self._edge_marix[start][end] = val
+        self._edge_marix[end][start] = val
 
 
 class Prim:
     def __init__(self, args):
+        self._node_ary = []
         for x in args:
-            self._node_ary = Node(x)
+            if len(self._node_ary) == 0:
+                self._node_ary = [x]
+            else:
+                self._node_ary.append(x)
 
         self._node_edge = Edge(len(args))
 
@@ -51,21 +50,44 @@ class Prim:
 
     @node_ary.setter
     def node_ary(self, val):
-        if self._node_ary is None:
-            self._node_ary = [val]
-        else:
-            self._node_ary.append(val)
+        self._node_ary.append(val)
 
     @property
     def node_edge(self):
         return self._node_edge
 
-    @node_edge.setter
-    def node_edge(self, val):
-        self._node_edge = val
+    def add_node_edge(self, start, end, val):
+        self._node_edge.add_edge(start, end, val)
+
+    @property
+    def stack(self):
+        return self._stack
+
+    @stack.setter
+    def stack(self, ele):
+        if self._stack is None:
+            self._stack = [ele]
+        else:
+            self._stack.append(ele)
+
+    def cal(self):
+        if self._stack is None:
+            self._stack = [self._node_ary[0]]
+        else:
+            while len(self._stack) != len(self._node_ary):
+                pass
 
 
-a = Edge(5)
-a.edge_marix = 5
-a.add_edge(0, 3, 5)
-print a
+ary = ['a', 'b', 'c', 'd', 'e', 'f']
+table = Prim(ary)
+table.add_node_edge(0, 1, 6)
+table.add_node_edge(0, 2, 1)
+table.add_node_edge(0, 3, 5)
+table.add_node_edge(1, 2, 5)
+table.add_node_edge(1, 4, 5)
+table.add_node_edge(2, 3, 5)
+table.add_node_edge(2, 4, 6)
+table.add_node_edge(2, 5, 4)
+table.add_node_edge(3, 5, 2)
+table.add_node_edge(4, 5, 6)
+print table.node_ary
