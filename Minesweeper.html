@@ -2,31 +2,47 @@
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-	<title>Document</title>
-	<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+	<title>Minewreeper</title>
+	<script type="text/javascript" src="jquery-3.0.0.min.js"></script>
 	<script type="text/javascript">
 	var ifContinue = true
+	var stack = new Array()
+	var mine_num = 15
+	var correct_count = 0
 	$(function(){
 		var col = 10
 		var row = 10
 		var area = []
+
+		//Forbid right mouse menu
+		$("body").bind("contextmenu", function(){
+    	    return false;
+    	});
+	
+    	$("body").bind("selectstart", function(){
+    	    return false;
+    	});
+
+    	//Init mine flag count
+    	$("#tag").html(mine_num)
+    	$("#tag").attr("all",mine_num)
 
 		//Init
 		for (var i = 0; i < row; i++) {
 			$("#mine").append("<tr id='line"+i+"' ></tr>")
 			area[i] = []
 			for (var j = 0; j < col; j++) {
-				$("#line"+i).append("<td id='area-"+i+"-"+j+"' class='area' value='0'>?</td>")
+				$("#line"+i).append("<td id='area-"+i+"-"+j+"' class='area background_color' value='0'>?</td>")
 				area[i][j] = 0
 			}
 		}
 
 		//Range Mine and Num
 		count = 0
-		while (count<10){
-			var ra_row = parseInt(Math.random()*10)
-			var ra_col = parseInt(Math.random()*10)
-			if (ra_row == 10 || ra_col == 10)
+		while (count<mine_num){
+			var ra_row = parseInt(Math.random()*row)
+			var ra_col = parseInt(Math.random()*col)
+			if (ra_row == row || ra_col == col || area[ra_row][ra_col] == 999)
 				continue
 			else{
 				area[ra_row][ra_col] = 999
@@ -51,29 +67,94 @@
 			}
 		}
 
-		$(".area").click(function(){
+		$(".area").mousedown(function(e){
 			if(ifContinue){
-				if($(this).attr("value")=="999"){
-					alert("You touch the mine")
-					alert("Game has been finished")
-					$(this).css("background-color","white")
-					$(this).html("*")
-					ifContinue = false
+				if (e.which == 1 && $(this).html() != "!") {
+					if($(this).attr("value")=="999"){
+						alert("You touch the mine")
+						alert("Game has been finished")
+						$(this).removeClass("background_color")
+						$(this).html("*")
+						ifContinue = false
+					}
+					else{
+						var this_row = $(this).attr("id").split("-")[1]
+						var this_col = $(this).attr("id").split("-")[2]
+						$(this).removeClass("background_color")
+						$(this).html($(this).attr("value"))
+						if($(this).attr("value") == 0)
+							searchArea(parseInt(this_row),parseInt(this_col),parseInt(row),parseInt(col))
+
+						var b_len = parseInt($(".background_color").length)
+						var m_len = parseInt($("#tag").attr("all"))
+						if (b_len == m_len) {
+							alert("Congratulation! You pass the game.")
+							ifContinue = false
+						}
+						
+					}
 				}
-				else{
-					var this_row = $(this).attr("id").split("-")[1]
-					var this_col = $(this).attr("id").split("-")[2]
-					$(this).css("background-color","white")
-					$(this).html($(this).attr("value"))
+				else if(e.which == 3){
+					if ($(this).html() == "!"){
+						$(this).html("?")
+						mine_num++
+						$("#tag").html(mine_num)
+					}
+					else{
+						if (mine_num !=0) {
+							$(this).html("!")
+							mine_num--
+							$("#tag").html(mine_num)
+						}
+					}
 				}
 			}
 			else{
 				alert("Game has been finished")
 			}
-		})
+		});
 
-		function searchArea(this_row,this_col){
-			
+		function showNearElement(this_row,this_col){
+			for(i = this_row-1;i<=this_row+1;i++){
+					if(i>=0 && i<row){
+						for(j = this_col-1;j<=this_col+1;j++){
+							if(j>=0 && j<col && $("#area-"+i+"-"+j).hasClass("background_color")){
+								$("#area-"+i+"-"+j).removeClass("background_color")
+								$("#area-"+i+"-"+j).html($("#area-"+i+"-"+j).attr("value"))
+							}
+							else
+								continue
+						}
+					}
+					else
+						continue
+				}
+		}
+
+		//Need to update, since if the size reach a hurge number, such as 10000*10000, it will cause the stack overflow.
+		function searchArea(this_row,this_col,row,col){
+			showNearElement(this_row,this_col)
+			stack.push(this_row+","+this_col)
+			//The Order is up-down-left-right
+
+			//can go up layer
+			if(this_row-1>=0 && area[this_row-1][this_col] == 0 && stack.indexOf((this_row-1).toString()+","+this_col) == -1)
+				searchArea(this_row-1,this_col,row,col)
+
+			//can go down layer
+			if(this_row+1<row && area[this_row+1][this_col] == 0 && stack.indexOf((this_row+1).toString()+","+this_col) == -1){ 
+				searchArea(this_row+1,this_col,row,col)
+			}
+
+			//can go left element
+			if(this_col-1>=0 && area[this_row][this_col-1] == 0 && stack.indexOf(this_row+","+(this_col-1).toString()) == -1){ 
+				searchArea(this_row,this_col-1,row,col)
+			}
+
+			//can go right element
+			if(this_col+1<col && area[this_row][this_col+1] == 0 && stack.indexOf(this_row+","+(this_col+1).toString()) == -1){ 
+				searchArea(this_row,this_col+1,row,col)
+			}
 
 		}
 
@@ -86,6 +167,10 @@
 			padding-left: 25px;
 			padding-right: 25px;
 			height: 50px;
+			border: 1px solid #ccc;
+		}
+
+		.background_color{
 			background-color: #ccc;
 		}
 	</style>
@@ -94,5 +179,6 @@
 <table id="mine">
 	
 </table>
+<div>Have marked:<span id="tag"></span></div>
 </body>
 </html>
