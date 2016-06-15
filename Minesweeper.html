@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>Document</title>
+	<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript">
+	var ifContinue = true
+	$(function(){
+		var col = 10
+		var row = 10
+		var area = []
+
+		//Init
+		for (var i = 0; i < row; i++) {
+			$("#mine").append("<tr id='line"+i+"' ></tr>")
+			area[i] = []
+			for (var j = 0; j < col; j++) {
+				$("#line"+i).append("<td id='area-"+i+"-"+j+"' class='area' value='0'>?</td>")
+				area[i][j] = 0
+			}
+		}
+
+		//Range Mine and Num
+		count = 0
+		while (count<10){
+			var ra_row = parseInt(Math.random()*10)
+			var ra_col = parseInt(Math.random()*10)
+			if (ra_row == 10 || ra_col == 10)
+				continue
+			else{
+				area[ra_row][ra_col] = 999
+				$("#area-"+ra_row+"-"+ra_col).attr("value",999)
+				for(i = ra_row-1;i<=ra_row+1;i++){
+					if(i>=0 && i<row){
+						for(j = ra_col-1;j<=ra_col+1;j++){
+							if(j>=0 && j<col){
+								if(area[i][j] != 999)
+									area[i][j]++
+
+								$("#area-"+i+"-"+j).attr("value",area[i][j])
+							}
+							else
+								continue
+						}
+					}
+					else
+						continue
+				}
+				count++
+			}
+		}
+
+		$(".area").click(function(){
+			if(ifContinue){
+				if($(this).attr("value")=="999"){
+					alert("You touch the mine")
+					alert("Game has been finished")
+					$(this).css("background-color","white")
+					$(this).html("*")
+					ifContinue = false
+				}
+				else{
+					var this_row = $(this).attr("id").split("-")[1]
+					var this_col = $(this).attr("id").split("-")[2]
+					$(this).css("background-color","white")
+					$(this).html($(this).attr("value"))
+				}
+			}
+			else{
+				alert("Game has been finished")
+			}
+		})
+
+		function searchArea(this_row,this_col){
+			
+
+		}
+
+		
+		
+	});
+	</script>
+	<style type="text/css">
+		td{
+			padding-left: 25px;
+			padding-right: 25px;
+			height: 50px;
+			background-color: #ccc;
+		}
+	</style>
+</head>
+<body>
+<table id="mine">
+	
+</table>
+</body>
+</html>
